@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Google Sign In Example</title>
+        <!-- Material Design Theming -->
+        <link
+            rel="stylesheet"
+            href="https://code.getmdl.io/1.1.3/material.orange-indigo.min.css"
+        />
+        <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/icon?family=Material+Icons"
+        />
+        <script
+            defer
+            src="https://code.getmdl.io/1.1.3/material.min.js"
+        ></script>
+        <link rel="stylesheet" href="main.css" />
+    </head>
+    <body>
+        <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+        <script src="https://www.gstatic.com/firebasejs/7.19.0/firebase-app.js"></script>
+
+        <!-- If you enabled Analytics in your project, add the Firebase SDK for Analytics -->
+        <script src="https://www.gstatic.com/firebasejs/7.19.0/firebase-analytics.js"></script>
+
+        <!-- Add Firebase products that you want to use -->
+        <script src="https://www.gstatic.com/firebasejs/7.19.0/firebase-auth.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/7.19.0/firebase-firestore.js"></script>
+        <script src="assets/js/fireBase.js"></script>
+        <script type="text/javascript">
+            function initApp() {
+                firebase
+                    .auth()
+                    .getRedirectResult()
+                    .then(function (result) {
+                        if (result.credential) {
+                            var credential = result.credential;
+                            var user = result.user;
+                            var prevUser = auth.currentUser;
+                            auth.signInWithCredential(credential)
+                                .then(function (user) {
+                                    console.log("Sign In Success", user);
+                                    var currentUser = user;
+                                    return user
+                                        .delete()
+                                        .then(function () {
+                                            return prevUser.linkWithCredential(
+                                                credential
+                                            );
+                                        })
+                                        .then(function () {
+                                            return auth.signInWithCredential(
+                                                credential
+                                            );
+                                        });
+                                })
+                                .catch(function (error) {
+                                    console.log("Sign In Error", error);
+                                });
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log("Sign In Error", error);
+                    });
+
+                firebase.auth().onAuthStateChanged(function (user) {
+                    if (user) {
+                        var displayName = user.displayName;
+                        var email = user.email;
+                        var emailVerified = user.emailVerified;
+                        var photoURL = user.photoURL;
+                        var isAnonymous = user.isAnonymous;
+                        var uid = user.uid;
+                        var providerData = user.providerData;
+                        if (email != null)
+                            window.location.replace("index.html");
+                        else if (email == null && firebase.auth().currentUser) {
+                            var provider = new firebase.auth.GoogleAuthProvider();
+                            firebase
+                                .auth()
+                                .currentUser.linkWithRedirect(provider);
+                        }
+                    } else {
+                        window.location.replace("index.html");
+                    }
+                });
+            }
+            window.onload = function () {
+                initApp();
+            };
+        </script>
+    </body>
+</html>
