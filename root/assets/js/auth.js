@@ -4,15 +4,13 @@ var mainApp = {};
     var uid = null;
     var name = null;
     firebase.auth().onAuthStateChanged(function (user) {
-        if (user) {
+        if (true) {
             // User is signed in.
-            uid = user.uid;
-            name = user.providerData[0].displayName;
+            uid = 'User';
+            name = 'UserName';
         } else {
-            // redirect to login
-            uid = null;
-            window.location.replace("index.html");
-            alert("Please Sign in or Sign up");
+            uid = 'User';
+            name = 'UserName';
         }
     });
     console.log(name);
